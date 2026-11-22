@@ -23,6 +23,38 @@ export function ServiceDetailPage({ slug }: ServiceDetailPageProps) {
   usePageMeta({
     title: category.seoTitle,
     description: category.seoDescription,
+    keywords: `${category.title}, ${category.items.map((item) => item.title).join(', ')}, New Imperial Enterprises`,
+    image: category.image,
+    imageAlt: category.imageAlt,
+    breadcrumbs: [
+      { name: 'Home', path: '/' },
+      { name: 'Services', path: '/services' },
+      { name: category.title, path: category.route },
+    ],
+    schema: {
+      '@type': 'Service',
+      name: category.title,
+      serviceType: category.title,
+      description: category.seoDescription,
+      provider: {
+        '@type': 'HomeAndConstructionBusiness',
+        name: BUSINESS_INFO.displayName,
+        email: BUSINESS_INFO.email,
+        telephone: ['+91-9700110084', '+91-7013248518'],
+      },
+      hasOfferCatalog: {
+        '@type': 'OfferCatalog',
+        name: category.title,
+        itemListElement: category.items.map((item) => ({
+          '@type': 'Offer',
+          itemOffered: {
+            '@type': 'Service',
+            name: item.title,
+            description: item.description,
+          },
+        })),
+      },
+    },
   });
 
   const relatedCategories = SERVICE_CATEGORIES.filter((c) =>

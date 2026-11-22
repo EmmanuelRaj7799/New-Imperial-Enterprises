@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
+import { BUSINESS_INFO } from '../data/businessData';
 
 export interface VideoSlotConfig {
   home: string;
@@ -51,7 +52,7 @@ export function isSafeVideoUrl(value: string): boolean {
 const SiteConfigContext = createContext<SiteConfigContextValue | null>(null);
 
 export function SiteConfigProvider({ children }: { children: React.ReactNode }) {
-  const [businessEmail, setBusinessEmailState] = useState<string>('');
+  const [businessEmail, setBusinessEmailState] = useState<string>(BUSINESS_INFO.email);
   const [videos, setVideos] = useState<VideoSlotConfig>(DEFAULT_VIDEOS);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 

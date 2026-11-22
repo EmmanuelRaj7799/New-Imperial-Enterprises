@@ -16,9 +16,23 @@ import {
 
 export function ServicesOverviewPage() {
   usePageMeta({
-    title: 'Services | Aluminium, Glass, UPVC, Ceilings, Railings & ACP | New Imperial Enterprises',
+    title: 'Services | Aluminium, Glass, UPVC & Interiors | New Imperial',
     description:
-      'Explore complete services by New Imperial Enterprises: aluminium works, 12 mm & 45x25 glass partitions, UPVC windows & doors, gypsum & 2x2 grid ceilings, ACP, railings, MS works, curtains and electrical works.',
+      'Explore aluminium windows, 12 mm & 45x25 glass partitions, UPVC doors, gypsum & 2x2 grid ceilings, ACP cladding, SS & glass railings, MS works, and electrical works.',
+    keywords:
+      'Aluminium Works, Glass Works, 12mm Glass Partitions, 45x25 Glass Systems, UPVC Windows and Doors, Gypsum Ceilings, 2x2 Grid Ceilings, ACP Cladding, SS Railings, Glass Railings, MS Works, Black NDS Curtains',
+    image: IMAGES.glassPartitions,
+    imageAlt: 'New Imperial Enterprises architectural glass partitions and aluminium framing services',
+    breadcrumbs: [
+      { name: 'Home', path: '/' },
+      { name: 'Services', path: '/services' },
+    ],
+    schema: {
+      '@type': 'CollectionPage',
+      name: 'Services by New Imperial Enterprises',
+      description:
+        'Complete service portfolio covering aluminium works, architectural glass works, UPVC windows and doors, interior and ceiling works, railings, ACP, and metal fabrication.',
+    },
   });
 
   return (

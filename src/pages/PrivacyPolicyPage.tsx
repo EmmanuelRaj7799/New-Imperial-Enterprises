@@ -8,7 +8,11 @@ export function PrivacyPolicyPage() {
   usePageMeta({
     title: 'Privacy Policy | New Imperial Enterprises',
     description:
-      'Privacy Policy explaining how New Imperial Enterprises handles customer enquiry details, phone and WhatsApp communication, and project correspondence.',
+      'Privacy Policy explaining how New Imperial Enterprises handles customer enquiry details, phone, email (amju620@gmail.com), and WhatsApp communication.',
+    breadcrumbs: [
+      { name: 'Home', path: '/' },
+      { name: 'Privacy Policy', path: '/privacy-policy' },
+    ],
   });
 
   const { businessEmail } = useSiteConfig();

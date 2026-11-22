@@ -20,9 +20,14 @@ import {
 
 export function HomePage() {
   usePageMeta({
-    title: 'New Imperial Enterprises | Crafting Spaces. Creating Possibilities.',
+    title: 'New Imperial Enterprises | Aluminium, Glass, UPVC & Interiors',
     description:
-      'From aluminium windows and glass partitions to UPVC installations, gypsum ceilings, railings, ACP cladding and complete interior solutions by New Imperial Enterprises.',
+      'New Imperial Enterprises delivers aluminium fabrication, 12 mm glass partitions, UPVC windows & doors, gypsum ceilings, railings, ACP & interior works. Call 9700110084.',
+    keywords:
+      'New Imperial Enterprises, Aluminium Fabrication, Aluminium Windows and Doors, 12mm Glass Partitions, 45x25 Glass Partition Systems, UPVC Windows and Doors, Gypsum Ceilings, 2x2 Grid Ceilings, ACP Cladding, SS Glass Railings, MS Works, Interior Works',
+    image: IMAGES.heroFacade,
+    imageAlt: 'New Imperial Enterprises architectural aluminium framing and reflective glass facade',
+    breadcrumbs: [{ name: 'Home', path: '/' }],
   });
 
   const featuredGallery = [

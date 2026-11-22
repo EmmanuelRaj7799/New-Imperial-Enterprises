@@ -39,9 +39,23 @@ const INITIAL_FORM: FormState = {
 
 export function ContactPage() {
   usePageMeta({
-    title: 'Contact Us | New Imperial Enterprises',
+    title: 'Contact New Imperial Enterprises | Request a Quote',
     description:
-      'Contact New Imperial Enterprises on 9700110084 or 7013248518, message us on WhatsApp, or submit your architectural fabrication and interior enquiry online.',
+      'Contact New Imperial Enterprises on 9700110084, 7013248518, amju620@gmail.com, or WhatsApp to request a quotation for aluminium, glass, UPVC, ceiling, and interior works.',
+    keywords:
+      'Contact New Imperial Enterprises, Aluminium Fabrication Quote, Glass Partition Enquiry, UPVC Windows Quote, 9700110084, 7013248518, amju620@gmail.com',
+    image: IMAGES.heroFacade,
+    imageAlt: 'Contact New Imperial Enterprises for aluminium, glass, UPVC and interior fabrication',
+    breadcrumbs: [
+      { name: 'Home', path: '/' },
+      { name: 'Contact Us', path: '/contact' },
+    ],
+    schema: {
+      '@type': 'ContactPage',
+      name: 'Contact New Imperial Enterprises',
+      description:
+        'Direct phone, WhatsApp, email (amju620@gmail.com), and online project enquiry form for New Imperial Enterprises.',
+    },
   });
 
   const { businessEmail, openSettings } = useSiteConfig();

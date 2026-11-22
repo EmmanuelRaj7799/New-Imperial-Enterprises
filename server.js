@@ -16,6 +16,33 @@ const PORT = process.env.PORT || 3000;
 
 app.use(express.json({ limit: '64kb' }));
 
+const DEFAULT_BUSINESS_EMAIL = 'amju620@gmail.com';
+
+const SITEMAP_ROUTES = [
+  { path: '/', changefreq: 'weekly', priority: '1.0' },
+  { path: '/about', changefreq: 'monthly', priority: '0.8' },
+  { path: '/services', changefreq: 'weekly', priority: '0.9' },
+  { path: '/services/aluminium-works', changefreq: 'weekly', priority: '0.9' },
+  { path: '/services/glass-works', changefreq: 'weekly', priority: '0.9' },
+  { path: '/services/upvc-windows-doors', changefreq: 'weekly', priority: '0.9' },
+  { path: '/services/interior-ceiling-works', changefreq: 'weekly', priority: '0.9' },
+  { path: '/services/railings-metal-works', changefreq: 'weekly', priority: '0.9' },
+  { path: '/gallery', changefreq: 'weekly', priority: '0.85' },
+  { path: '/contact', changefreq: 'monthly', priority: '0.9' },
+  { path: '/privacy-policy', changefreq: 'yearly', priority: '0.3' },
+];
+
+function getSiteOrigin(req) {
+  const configuredUrl = process.env.APP_URL?.trim().replace(/\/+$/, '');
+  if (configuredUrl && /^https?:\/\//i.test(configuredUrl) && configuredUrl !== 'MY_APP_URL') {
+    return configuredUrl;
+  }
+  const protoHeader = req.get('x-forwarded-proto');
+  const proto = protoHeader ? protoHeader.split(',')[0].trim() : req.protocol || 'https';
+  const host = req.get('x-forwarded-host') || req.get('host') || 'localhost:3000';
+  return `${proto}://${host}`;
+}
+
 function getConfiguredBusinessEmail() {
   const candidates = [
     process.env.BUSINESS_EMAIL,
@@ -31,8 +58,32 @@ function getConfiguredBusinessEmail() {
       return cleaned;
     }
   }
-  return '';
+  return DEFAULT_BUSINESS_EMAIL;
 }
+
+app.get('/robots.txt', (req, res) => {
+  const origin = getSiteOrigin(req);
+  res
+    .type('text/plain; charset=utf-8')
+    .set('Cache-Control', 'public, max-age=3600')
+    .send(`User-agent: *\nAllow: /\nDisallow: /api/\n\nSitemap: ${origin}/sitemap.xml\n`);
+});
+
+app.get('/sitemap.xml', (req, res) => {
+  const origin = getSiteOrigin(req);
+  const lastmod = new Date().toISOString().split('T')[0];
+  const urls = SITEMAP_ROUTES.map(
+    (route) =>
+      `  <url>\n    <loc>${origin}${route.path}</loc>\n    <lastmod>${lastmod}</lastmod>\n    <changefreq>${route.changefreq}</changefreq>\n    <priority>${route.priority}</priority>\n  </url>`
+  ).join('\n');
+
+  res
+    .type('application/xml; charset=utf-8')
+    .set('Cache-Control', 'public, max-age=3600')
+    .send(
+      `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>\n`
+    );
+});
 
 app.get('/api/health', (_req, res) => {
   res.json({ ok: true });

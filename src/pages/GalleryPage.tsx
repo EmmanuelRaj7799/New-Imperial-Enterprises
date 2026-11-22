@@ -23,9 +23,23 @@ import {
 
 export function GalleryPage() {
   usePageMeta({
-    title: 'Gallery / Our Work | New Imperial Enterprises',
+    title: 'Project Gallery | Aluminium, Glass, UPVC & Interiors',
     description:
-      'Explore an architectural visual showcase of aluminium windows, 12 mm glass partitions, glass elevations, UPVC doors, gypsum & 2x2 grid ceilings, ACP cladding, railings, and MS fabrication.',
+      'Browse architectural aluminium windows, 12 mm glass partitions, glass elevations, UPVC doors, gypsum ceilings, ACP facades, railings, and MS fabrication by New Imperial Enterprises.',
+    keywords:
+      'Aluminium Windows Gallery, Glass Partition Showcase, UPVC Doors Photos, Gypsum Ceiling Designs, ACP Elevation Cladding, Glass Railing Projects, New Imperial Enterprises',
+    image: IMAGES.acpMetalwork,
+    imageAlt: 'New Imperial Enterprises architectural project gallery featuring ACP cladding, glass and aluminium',
+    breadcrumbs: [
+      { name: 'Home', path: '/' },
+      { name: 'Gallery', path: '/gallery' },
+    ],
+    schema: {
+      '@type': 'ImageGallery',
+      name: 'New Imperial Enterprises Architectural Work Showcase',
+      description:
+        'Visual showcase of aluminium fabrication, glass partitions, UPVC windows and doors, ceilings, railings, ACP cladding, and interior craftsmanship.',
+    },
   });
 
   const [activeFilter, setActiveFilter] = useState<GalleryCategory>('ALL');

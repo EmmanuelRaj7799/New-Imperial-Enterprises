@@ -14,9 +14,23 @@ import {
 
 export function AboutPage() {
   usePageMeta({
-    title: 'About Us | New Imperial Enterprises',
+    title: 'About New Imperial Enterprises | Fabrication & Interiors',
     description:
-      'Learn about New Imperial Enterprises — aluminium fabrication, glass works, UPVC windows and doors, ceilings, railings, ACP applications, and customized interior works.',
+      'Discover New Imperial Enterprises — precision aluminium fabrication, glass partitions, UPVC windows & doors, gypsum ceilings, railings, ACP cladding, and interior solutions.',
+    keywords:
+      'About New Imperial Enterprises, Aluminium Fabrication Practice, Architectural Glass Craftsmanship, UPVC Specialists, Gypsum Ceiling Contractors, GSTIN 36BZUPM1868G1ZQ',
+    image: IMAGES.workshopCraft,
+    imageAlt: 'New Imperial Enterprises aluminium fabrication studio and profile inspection',
+    breadcrumbs: [
+      { name: 'Home', path: '/' },
+      { name: 'About Us', path: '/about' },
+    ],
+    schema: {
+      '@type': 'AboutPage',
+      name: 'About New Imperial Enterprises',
+      description:
+        'Overview of New Imperial Enterprises architectural fabrication and interior execution across aluminium, glass, UPVC, ceilings, railings, ACP, and metalwork.',
+    },
   });
 
   return (

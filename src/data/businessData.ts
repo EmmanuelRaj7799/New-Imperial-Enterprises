@@ -7,6 +7,7 @@ export const BUSINESS_INFO = {
     { display: '7013248518', href: 'tel:7013248518', label: 'Secondary Phone' },
   ],
   gstin: '36BZUPM1868G1ZQ',
+  email: 'amju620@gmail.com',
   whatsappBase: 'https://wa.me/919700110084',
   whatsappDefaultMessage:
     'Hello New Imperial Enterprises, I would like to enquire about your services. Please contact me.',
@@ -749,7 +750,7 @@ export const FAQ_ITEMS: FaqItem[] = [
   {
     question: 'How can I contact New Imperial Enterprises?',
     answer:
-      'You can reach New Imperial Enterprises by calling 9700110084 or 7013248518, messaging us on WhatsApp at https://wa.me/919700110084, or submitting an enquiry on our Contact Us page.',
+      'You can reach New Imperial Enterprises by calling 9700110084 or 7013248518, emailing amju620@gmail.com, messaging us on WhatsApp at https://wa.me/919700110084, or submitting an enquiry on our Contact Us page.',
   },
 ];
 
