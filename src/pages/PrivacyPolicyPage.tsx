@@ -8,7 +8,7 @@ export function PrivacyPolicyPage() {
   usePageMeta({
     title: 'Privacy Policy | New Imperial Enterprises',
     description:
-      'Privacy Policy explaining how New Imperial Enterprises handles customer enquiry details, phone and WhatsApp communication, and virtual assistant interactions.',
+      'Privacy Policy explaining how New Imperial Enterprises handles customer enquiry details, phone and WhatsApp communication, and project correspondence.',
   });
 
   const { businessEmail } = useSiteConfig();
@@ -63,19 +63,7 @@ export function PrivacyPolicyPage() {
 
           <section className="space-y-3">
             <h2 className="font-display text-xl font-bold text-[#101C35]">
-              3. Imperial AI Assistant Conversations
-            </h2>
-            <p>
-              Messages entered into the Imperial AI Assistant are processed through our backend
-              service solely to answer questions about our services and guide you toward our
-              contact channels. Please avoid entering sensitive financial or personal
-              identification numbers in the chat window.
-            </p>
-          </section>
-
-          <section className="space-y-3">
-            <h2 className="font-display text-xl font-bold text-[#101C35]">
-              4. WhatsApp &amp; External Communication Channels
+              3. WhatsApp &amp; External Communication Channels
             </h2>
             <p>
               Clicking a WhatsApp button opens a conversation with our official business number on
@@ -86,7 +74,7 @@ export function PrivacyPolicyPage() {
 
           <section className="space-y-3">
             <h2 className="font-display text-xl font-bold text-[#101C35]">
-              5. Data Retention &amp; Contact Requests
+              4. Data Retention &amp; Contact Requests
             </h2>
             <p>
               We retain enquiry records only as needed to respond to project requests and maintain

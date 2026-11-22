@@ -57,10 +57,14 @@ export function SiteConfigProvider({ children }: { children: React.ReactNode }) 
 
   useEffect(() => {
     try {
+      const envEmailRaw = (import.meta.env.VITE_BUSINESS_EMAIL ?? '').trim().replace(/^['"]|['"]$/g, '');
       const savedEmail = localStorage.getItem(STORAGE_EMAIL_KEY);
       if (savedEmail && isValidEmail(savedEmail)) {
         setBusinessEmailState(savedEmail);
       } else {
+        if (envEmailRaw && isValidEmail(envEmailRaw)) {
+          setBusinessEmailState(envEmailRaw);
+        }
         fetch('/api/site-config')
           .then((res) => (res.ok ? res.json() : null))
           .then((data: { defaultEmail?: string } | null) => {
@@ -69,7 +73,7 @@ export function SiteConfigProvider({ children }: { children: React.ReactNode }) 
             }
           })
           .catch(() => {
-            // Keep unconfigured placeholder state if offline
+            // Keep configured fallback or placeholder state if offline
           });
       }
 

@@ -1,211 +1,52 @@
-import 'dotenv/config';
+import dotenv from 'dotenv';
 import express from 'express';
 import fs from 'fs';
 import path from 'path';
 import crypto from 'crypto';
-import { GoogleGenAI, ThinkingLevel } from '@google/genai';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+dotenv.config({ path: path.resolve(__dirname, '.env') });
+dotenv.config();
 
 const app = express();
-const PORT = Number(process.env.PORT) || 3000;
-const IS_PRODUCTION = process.env.NODE_ENV === 'production';
+const PORT = process.env.PORT || 3000;
 
 app.use(express.json({ limit: '64kb' }));
 
-function getConfiguredApiKey() {
-  const key = process.env.GEMINI_API_KEY?.trim();
-  if (!key || key === 'MY_GEMINI_API_KEY') {
-    return null;
+function getConfiguredBusinessEmail() {
+  const candidates = [
+    process.env.BUSINESS_EMAIL,
+    process.env.VITE_BUSINESS_EMAIL,
+    process.env.CONTACT_EMAIL,
+    process.env.COMPANY_EMAIL,
+    process.env.EMAIL,
+  ];
+  for (const candidate of candidates) {
+    if (typeof candidate !== 'string') continue;
+    const cleaned = candidate.trim().replace(/^['"]|['"]$/g, '');
+    if (cleaned && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleaned) && cleaned.length <= 160) {
+      return cleaned;
+    }
   }
-  return key;
+  return '';
 }
 
-const IMPERIAL_SYSTEM_INSTRUCTION = `You are the "Imperial AI Assistant", the official virtual assistant for NEW IMPERIAL ENTERPRISES.
-
-VERIFIED BUSINESS FACTS (use ONLY these facts; NEVER invent anything else):
-- Business Name: NEW IMPERIAL ENTERPRISES
-- Tagline: Crafting Spaces. Creating Possibilities.
-- Phone Numbers: 9700110084, 7013248518
-- WhatsApp: https://wa.me/919700110084
-- GSTIN: 36BZUPM1868G1ZQ
-- Email: Only share an email address if explicitly provided in the conversation context; otherwise direct customers to phone numbers 9700110084 / 7013248518, WhatsApp, or the Contact page enquiry form.
-
-COMPLETE LIST OF SERVICES OFFERED:
-1. Aluminium Works:
-   - Aluminium windows
-   - Aluminium doors
-   - Aluminium partitions
-   - Aluminium glass partitions
-   - Aluminium French windows
-   - Aluminium profile cupboard works
-   - Aluminium workstations
-   - Customized aluminium fabrication
-2. Glass Works:
-   - 12 mm glass partitions
-   - 45x25 glass partition systems
-   - Aluminium glass partitions
-   - Glass elevations
-   - All types of glass work
-   - Glass railings
-   - Glass installation works
-3. UPVC Windows and Doors:
-   - UPVC windows
-   - UPVC doors
-   - Customized UPVC solutions
-4. Interior and Ceiling Works:
-   - Gypsum ceilings
-   - Gypsum partitions
-   - Grid ceilings
-   - 2x2 grid ceilings
-   - ACP works
-   - All types of paint works
-   - Aluminium workstations
-   - Wooden workstations
-5. Railings and Metal Works:
-   - SS railings
-   - Glass railings
-   - Aluminium railings
-   - Aluminium glass railings
-   - MS works
-6. Additional Services:
-   - Black NDS curtains
-   - Electrical works
-   - Aluminium profile cupboard works
-   - Customized interior and fabrication solutions
-
-ENQUIRY PROCESS:
-1. Customer Enquiry
-2. Project Discussion
-3. Design & Execution
-4. Installation & Finishing
-
-STRICT BEHAVIOUR RULES:
-- Respond naturally, concisely (typically 2-4 crisp sentences or short bullet points), and professionally in clear everyday English.
-- Understand common phrasing variations and simple English questions.
-- Ask what type of work the customer needs when helpful.
-- Collect enquiry details (Name, Contact Number, Service Required, and Project Location) ONLY if the customer agrees to share them.
-- When a customer asks for a quotation, pricing, estimate, or site discussion, offer to connect them directly on WhatsApp (https://wa.me/919700110084) or via phone (9700110084 / 7013248518) or the Contact page form.
-- NEVER invent prices, rates per sq ft, discounts, project timelines, warranties, certifications, founding year, experience counts, office address, or technical specifications.
-- NEVER claim that a quotation, site visit, or booking has been confirmed.
-- If asked something outside verified company information, politely state that the team can clarify directly and share the phone numbers 9700110084 and 7013248518.`;
-
-app.get('/api/chat/status', (_req, res) => {
-  const configured = Boolean(getConfiguredApiKey());
-  res.json({ configured });
-});
-
-app.post('/api/chat', async (req, res) => {
-  const apiKey = getConfiguredApiKey();
-  if (!apiKey) {
-    res.status(503).json({
-      error: 'AI assistant is awaiting Gemini API configuration.',
-      code: 'AI_NOT_CONFIGURED',
-    });
-    return;
-  }
-
-  const body = req.body ?? {};
-
-  if (!Array.isArray(body.messages) || body.messages.length === 0) {
-    res.status(400).json({ error: 'A valid conversation message array is required.' });
-    return;
-  }
-
-  const sanitizedMessages = [];
-  for (const item of body.messages.slice(-16)) {
-    if (
-      item &&
-      typeof item === 'object' &&
-      'role' in item &&
-      'text' in item &&
-      (item.role === 'user' || item.role === 'model') &&
-      typeof item.text === 'string'
-    ) {
-      const trimmed = item.text.trim();
-      if (trimmed.length > 0 && trimmed.length <= 2000) {
-        sanitizedMessages.push({ role: item.role, text: trimmed });
-      }
-    }
-  }
-
-  if (
-    sanitizedMessages.length === 0 ||
-    sanitizedMessages[sanitizedMessages.length - 1].role !== 'user'
-  ) {
-    res.status(400).json({ error: 'The latest message must be a valid user message.' });
-    return;
-  }
-
-  let emailNote = '';
-  if (typeof body.configuredEmail === 'string') {
-    const emailCandidate = body.configuredEmail.trim();
-    if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailCandidate) && emailCandidate.length <= 160) {
-      emailNote = `\n- Verified Configured Business Email: ${emailCandidate}`;
-    }
-  }
-
-  try {
-    const ai = new GoogleGenAI({
-      apiKey,
-      httpOptions: {
-        headers: {
-          'User-Agent': 'aistudio-build',
-        },
-      },
-    });
-
-    const contents = sanitizedMessages.map((msg) => ({
-      role: msg.role,
-      parts: [{ text: msg.text }],
-    }));
-
-    const response = await ai.models.generateContent({
-      model: 'gemini-4-hydrogen',
-      contents,
-      config: {
-        systemInstruction: `${IMPERIAL_SYSTEM_INSTRUCTION}${emailNote}`,
-        thinkingConfig: { thinkingLevel: ThinkingLevel.LOW },
-      },
-    });
-
-    const reply = response.text?.trim();
-    if (!reply) {
-      res.status(502).json({
-        error: 'No response was returned by the assistant. Please call 9700110084 or 7013248518.',
-      });
-      return;
-    }
-
-    const latestUserText = sanitizedMessages[sanitizedMessages.length - 1].text.toLowerCase();
-    const quoteIntent =
-      /quote|quotation|price|cost|rate|estimate|whatsapp|talk|team|call|visit|enquir/.test(
-        latestUserText
-      );
-
-    res.json({
-      reply,
-      suggestWhatsApp: quoteIntent || reply.toLowerCase().includes('whatsapp'),
-    });
-  } catch (err) {
-    const message = err instanceof Error ? err.message : 'Unable to reach AI service.';
-    console.error('[Imperial AI Assistant Error]', message);
-    res.status(502).json({
-      error:
-        'The AI assistant is temporarily unavailable. You can reach our team directly at 9700110084 or 7013248518.',
-    });
-  }
+app.get('/api/health', (_req, res) => {
+  res.json({ ok: true });
 });
 
 // Safe site config endpoint (never exposes secrets)
 app.get('/api/site-config', (_req, res) => {
-  const rawEmail = process.env.BUSINESS_EMAIL?.trim() ?? '';
-  const validEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(rawEmail) ? rawEmail : '';
   res.json({
-    defaultEmail: validEmail,
+    defaultEmail: getConfiguredBusinessEmail(),
   });
 });
 
 // Contact form enquiry submission endpoint
-const DATA_DIR = path.resolve(process.cwd(), 'data');
+const DATA_DIR = path.resolve(__dirname, 'data');
 const ENQUIRIES_FILE = path.resolve(DATA_DIR, 'enquiries.json');
 
 app.post('/api/enquiries', (req, res) => {
@@ -303,40 +144,32 @@ app.post('/api/enquiries', (req, res) => {
   });
 });
 
-async function startServer() {
-  const distDir = path.resolve(process.cwd(), 'dist');
-  const distIndex = path.join(distDir, 'index.html');
+// Resolve built frontend assets cleanly relative to server.js location
+const candidateDistDirs = [
+  path.resolve(__dirname, 'dist'),
+  path.resolve(process.cwd(), 'dist'),
+];
+const distDir =
+  candidateDistDirs.find((dir) => fs.existsSync(path.join(dir, 'index.html'))) ??
+  candidateDistDirs[0];
+const distIndex = path.join(distDir, 'index.html');
 
-  // Ensure the Vite production bundle exists if hosted on platforms (e.g. Hostinger Express default)
-  // that boot server.js directly without running `npm run build` first.
-  if (IS_PRODUCTION && !fs.existsSync(distIndex)) {
-    console.log('Production dist bundle not found — building frontend assets with Vite...');
-    const { build } = await import('vite');
-    await build();
+app.use(express.static(distDir, { maxAge: '1h' }));
+
+app.get('*', (_req, res) => {
+  if (fs.existsSync(distIndex)) {
+    res.sendFile(distIndex);
+    return;
   }
+  res
+    .status(500)
+    .type('text/plain')
+    .send('Frontend build not found. Please run "npm run build" during deployment.');
+});
 
-  if (IS_PRODUCTION || fs.existsSync(distIndex)) {
-    app.use(express.static(distDir, { maxAge: '1h' }));
-    app.get('*', (_req, res) => {
-      res.sendFile(distIndex);
-    });
-  } else {
-    const { createServer: createViteServer } = await import('vite');
-    const vite = await createViteServer({
-      server: { middlewareMode: true },
-      appType: 'spa',
-    });
-    app.use(vite.middlewares);
-  }
-
-  app.listen(PORT, '0.0.0.0', () => {
-    console.log(`New Imperial Enterprises server listening on http://localhost:${PORT}`);
-  });
-}
-
-startServer().catch((err) => {
-  console.error('Failed to start server:', err);
-  process.exit(1);
+// Synchronous top-level listen with raw process.env.PORT for LiteSpeed LSNode / Hostinger compatibility
+app.listen(PORT, () => {
+  console.log(`New Imperial Enterprises server listening on port ${PORT}`);
 });
 
 export default app;

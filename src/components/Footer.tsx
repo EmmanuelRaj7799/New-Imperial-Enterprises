@@ -176,6 +176,10 @@ export function Footer() {
             <Link to="/privacy-policy" className="hover:text-white transition-colors">
               Privacy Policy
             </Link>
+            <span aria-hidden="true">·</span>
+            <span>
+              Created by <span className="text-[#D6B36A] font-medium">A&amp;I Nexus</span>
+            </span>
           </div>
 
           <button
