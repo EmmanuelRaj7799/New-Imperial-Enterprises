@@ -1,0 +1,8 @@
+{
+  "name": "New Imperial Enterprises",
+  "description": "Aluminium Fabrication, Glass Works, UPVC Windows & Doors, Interior Works, Ceiling Works, Railings, ACP and Metal Fabrication — Crafting Spaces. Creating Possibilities.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

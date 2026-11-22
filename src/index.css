@@ -1,0 +1,121 @@
+@import "tailwindcss";
+
+@theme {
+  --font-display: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "DM Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+
+  --color-obsidian: #080B12;
+  --color-navy: #101C35;
+  --color-electric: #1769FF;
+  --color-cyan-accent: #00CFFF;
+  --color-silver: #C8D0DA;
+  --color-champagne: #D6B36A;
+  --color-surface-light: #F2F4F7;
+}
+
+@layer base {
+  html {
+    font-family: var(--font-sans);
+    color: #101C35;
+    background-color: #ffffff;
+    overflow-x: clip;
+  }
+
+  body {
+    overflow-x: clip;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-display);
+    text-wrap: balance;
+  }
+}
+
+/* Architectural 3D grid & slow Ken Burns motion */
+@keyframes architecturalDrift {
+  0% {
+    transform: translate3d(0, 0, 0) rotateX(18deg) rotateY(-12deg);
+  }
+  50% {
+    transform: translate3d(0, -14px, 0) rotateX(22deg) rotateY(-8deg);
+  }
+  100% {
+    transform: translate3d(0, 0, 0) rotateX(18deg) rotateY(-12deg);
+  }
+}
+
+@keyframes subtleZoomPan {
+  0% {
+    transform: scale(1.02) translate3d(0, 0, 0);
+  }
+  50% {
+    transform: scale(1.08) translate3d(-1.2%, -0.8%, 0);
+  }
+  100% {
+    transform: scale(1.02) translate3d(0, 0, 0);
+  }
+}
+
+@keyframes metallicSheen {
+  0% {
+    transform: translateX(-120%) skewX(-20deg);
+  }
+  100% {
+    transform: translateX(220%) skewX(-20deg);
+  }
+}
+
+.animate-arch-drift {
+  animation: architecturalDrift 12s ease-in-out infinite;
+}
+
+.animate-ken-burns {
+  animation: subtleZoomPan 26s ease-in-out infinite;
+}
+
+.btn-metallic-sheen {
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-metallic-sheen::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  width: 45%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.22),
+    transparent
+  );
+  transform: translateX(-140%) skewX(-20deg);
+  pointer-events: none;
+}
+
+.btn-metallic-sheen:hover::after {
+  animation: metallicSheen 0.85s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Perspective utility for 3D architectural surfaces */
+.perspective-1200 {
+  perspective: 1200px;
+}
+
+.preserve-3d {
+  transform-style: preserve-3d;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-arch-drift,
+  .animate-ken-burns {
+    animation: none !important;
+  }
+  .btn-metallic-sheen:hover::after {
+    animation: none !important;
+  }
+  html {
+    scroll-behavior: auto;
+  }
+}
